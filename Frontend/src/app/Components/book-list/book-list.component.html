@@ -1,0 +1,14 @@
+<div class="container">
+  <div class="section-header" (click)="toggleCollapse()" >
+    {{sectionTitle}}
+  </div>
+  <div class="spinner-div" *ngIf="itemList.length<=0" >
+    <mat-spinner></mat-spinner>
+  </div>
+  <div class="grid" [ngClass]="collapsed?'collapsed':''" *ngIf="dataType==0&&itemList.length>0" >
+    <app-book-list-item *ngFor="let book of itemList" [bookData]="book" [deleteCallback]="deleteCallback" ></app-book-list-item>
+</div>
+<div class="grid" [ngClass]="collapsed?'collapsed':''" *ngIf="dataType==1&&itemList.length>0" >
+  <app-issue-list-item *ngFor="let book of itemList" [issueData]="book" ></app-issue-list-item>
+</div>
+</div>

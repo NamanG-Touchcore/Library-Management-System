@@ -1,0 +1,89 @@
+using Microsoft.AspNetCore.Mvc;
+using Library.Models;
+using Library.Repositories;
+using Microsoft.AspNetCore.Authorization;
+
+// GET books
+// PUT books
+// GET books/:bookId
+// PUT books/:bookId
+// GET books/:bookId/issues
+// PUT books/:bookId/issues
+
+namespace Library.Controllers;
+[Authorize]
+[ApiController]
+[Route("books")]
+
+public class BookController : ControllerBase
+{
+    public readonly IBookRepoSQL repo2;
+    public readonly IIssueSQL issueRepo;
+    public BookController(IBookRepoSQL _repo, IIssueSQL _issueRepo)
+    {
+        repo2 = _repo;
+        issueRepo = _issueRepo;
+    }
+    // public static IssueRepo issueRepo =new();
+    [HttpGet]
+    public IActionResult Get()
+    {
+        return Ok(repo2.GetBookRecord().ToList());
+
+    }
+    [HttpPut]
+    public IActionResult Put(IBook book)
+    {
+        return Ok(repo2.addBook(book));
+    }
+    [HttpGet("issues")]
+    public IActionResult GetIssues()
+    {
+        return Ok(issueRepo.GetIssues());
+    }
+    // This method is redundant because the implementation of selective data to be returned from the query is yet to be implemented, therefore there is no point of a separate route that returns the specific book information
+    [HttpGet("{bookId}")]
+    public IActionResult Get(int bookId)
+    {
+        return Ok(repo2.getBook(bookId));
+    }
+    [HttpPut("{bookId}")]
+    public IActionResult Put(int bookId, IBook book)
+    {
+        repo2.updateBook(bookId, book);
+        return Ok("Book Updated!");
+    }
+    [HttpDelete("{bookId}")]
+    public IActionResult Delete(int bookId)
+    {
+        repo2.DeleteBook(bookId);
+        return Ok("Book Deleted!");
+    }
+    [HttpGet("{bookId}/issues")]
+    public IActionResult GetIssues(int bookId)
+    {
+        return Ok(issueRepo.GetIssuesByBookId(bookId));
+    }
+    // [HttpGet("{bookId}/issue/{issueId}")]
+    // public IIssue GetIssue(int issueId)
+    // {
+    //     return issueRepo.GetIssue(issueId);
+    // }
+    [HttpPut("{bookId}/issues")]
+    public IActionResult PutIssues(int bookId, IIssue issue)
+    {
+        issueRepo.putIssues(bookId, issue);
+        return Ok("Book Issued");
+    }
+    [HttpPut("{bookId}/issues/{issueId}")]
+    public IActionResult UpdateIssue(int bookId, int issueId, int isActive, int fine)
+    {
+        issueRepo.putIssue(bookId, issueId, isActive, fine);
+        return Ok("Issue Updated");
+    }
+    // [HttpPut("{bookId}/issues/{issueId}")]
+    // public void PutIssue(int bookId, int IssueId, IIssue issue)
+    // {
+
+    // }
+}
