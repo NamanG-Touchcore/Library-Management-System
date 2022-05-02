@@ -4,7 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldControl } from '@angular/material/form-field';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { map, startWith } from 'rxjs/operators';
+import { filter, map, startWith } from 'rxjs/operators';
 import { GlobalStoreService } from 'src/app/Services/global-store.service';
 import { BookEditDialogComponent } from '../book-edit-dialog/book-edit-dialog.component';
 @Component({
@@ -55,7 +55,7 @@ export class TopBarComponent implements OnInit, OnDestroy {
       date.getHours() >= 12 ? 'PM' : 'AM'
     }, ${this.days[date.getDay()]}`;
   };
-
+  isDashboard: boolean = false;
   buttonClick = () => {
     alert('click');
   };
@@ -76,6 +76,7 @@ export class TopBarComponent implements OnInit, OnDestroy {
     this.route.navigateByUrl('/books');
   }
   ngOnInit(): void {
+    if (this.route.url == '/books') this.isDashboard = true;
     this.filteredOptions = this.myControl.valueChanges.pipe(
       startWith(''),
       map((value) => this._filter(value))
@@ -96,6 +97,12 @@ export class TopBarComponent implements OnInit, OnDestroy {
           })
           .sort())
     );
+    this.route.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe((event: any) => {
+        if (event.url == '/books') this.isDashboard = true;
+        else this.isDashboard = false;
+      });
   }
   user: any;
   logOut() {

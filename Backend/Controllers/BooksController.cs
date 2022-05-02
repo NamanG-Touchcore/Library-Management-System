@@ -50,14 +50,12 @@ public class BookController : ControllerBase
     [HttpPut("{bookId}")]
     public IActionResult Put(int bookId, IBook book)
     {
-        repo2.updateBook(bookId, book);
-        return Ok("Book Updated!");
+        return Ok(repo2.updateBook(bookId, book));
     }
     [HttpDelete("{bookId}")]
     public IActionResult Delete(int bookId)
     {
-        repo2.DeleteBook(bookId);
-        return Ok("Book Deleted!");
+        return Ok(repo2.DeleteBook(bookId));
     }
     [HttpGet("{bookId}/issues")]
     public IActionResult GetIssues(int bookId)
@@ -72,14 +70,12 @@ public class BookController : ControllerBase
     [HttpPut("{bookId}/issues")]
     public IActionResult PutIssues(int bookId, IIssue issue)
     {
-        issueRepo.putIssues(bookId, issue);
-        return Ok("Book Issued");
+        return Ok(issueRepo.putIssues(bookId, issue));
     }
     [HttpPut("{bookId}/issues/{issueId}")]
     public IActionResult UpdateIssue(int bookId, int issueId, int isActive, int fine)
     {
-        issueRepo.putIssue(bookId, issueId, isActive, fine);
-        return Ok("Issue Updated");
+        return Ok(issueRepo.putIssue(bookId, issueId, isActive, fine));
     }
     // [HttpPut("{bookId}/issues/{issueId}")]
     // public void PutIssue(int bookId, int IssueId, IIssue issue)

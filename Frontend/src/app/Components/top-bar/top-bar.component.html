@@ -1,7 +1,12 @@
 <div class="container">
   <div class="top-bar">
-    <div class="heading" *ngIf="searchBarShown == false">
+    <div class="heading" *ngIf="searchBarShown == false && isDashboard">
       {{ user.username }}'s Dashboard
+    </div>
+    <div class="heading" *ngIf="searchBarShown == false && !isDashboard">
+      <button mat-button (click)="goHome()">
+        <mat-icon> home </mat-icon>
+      </button>
     </div>
     <div class="date" *ngIf="searchBarShown == false">
       {{ dateStr }}
@@ -38,7 +43,6 @@
         <mat-icon>person</mat-icon>
       </button>
       <mat-menu #menu="matMenu">
-        <button mat-menu-item (click)="goHome()">Home</button>
         <button mat-menu-item (click)="logOut()">Log Out</button>
       </mat-menu>
     </div>

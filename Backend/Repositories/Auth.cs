@@ -26,48 +26,55 @@ namespace Library.Repositories
         }
         public IUser login(string username, string password)
         {
-            try
+            using (con = new SqlConnection(Constr))
             {
-                using (con = new SqlConnection(Constr))
+                IUser user = new IUser();
+                con.Open();
+                var cmd = new SqlCommand($"Select * from userTable where username='{username}' ", con);
+                SqlDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
                 {
-                    con.Open();
-                    var cmd = new SqlCommand($"Select username, password, role from userTable where username='{username}' AND password='{password}'", con);
-                    SqlDataReader rdr = cmd.ExecuteReader();
-                    while (rdr.Read())
-                    {
-                        IUser user = new IUser();
-                        user.username = Convert.ToString(rdr["username"]);
-                        user.password = Convert.ToString(rdr["password"]);
-                        user.role = Convert.ToInt32(rdr["role"]);
-                        // var tempSalt = Convert.ToString(rdr["userSalt"]);
-                        // user.passwordSalt = Encoding.UTF8.GetBytes(tempSalt);
-                        // for (int i = 0; i < tempSalt.Length; i++)
-                        // {
-                        // var tempStr = Convert.ToByte(tempSalt[i]);
-                        // user.passwordSalt.Append(Convert.ToByte(tempSalt[i]));
-                        // }
-                        // var tempHash = Convert.ToString(rdr["userHash"]);
-                        // user.passwordHash = Encoding.UTF8.GetBytes(tempHash);
-                        // for (int i = 0; i < tempSalt.Length; i++)
-                        // {
-                        // user.passwodHash.Append(Convert.ToByte(tempHash[i]));
-                        // }
-                        // if (!verifyHash(user.password, user.passwordHash, user.passwordSalt))
-                        // {
-                        //     // var val = verifyHash(user.password, user.passwordHash, user.passwordSalt);
-                        //     return tempHash + " " + tempSalt;
-                        // }
-                        if (user.password != password)
-                            return null;
-                        var token = CreateToken(user);
-                        user.token = token;
-                        return user;
-                    }
+                    user.username = Convert.ToString(rdr["username"]);
+                    user.password = Convert.ToString(rdr["password"]);
+                    // bool tempPass = user.password != password;
+                    // string userPassword = Convert.ToString(rdr["password"]);
+                    user.role = Convert.ToInt32(rdr["role"]);
+                    // var tempSalt = Convert.ToString(rdr["userSalt"]);
+                    // user.passwordSalt = Encoding.UTF8.GetBytes(tempSalt);
+                    // for (int i = 0; i < tempSalt.Length; i++)
+                    // {
+                    // var tempStr = Convert.ToByte(tempSalt[i]);
+                    // user.passwordSalt.Append(Convert.ToByte(tempSalt[i]));
+                    // }
+                    // var tempHash = Convert.ToString(rdr["userHash"]);
+                    // user.passwordHash = Encoding.UTF8.GetBytes(tempHash);
+                    // for (int i = 0; i < tempSalt.Length; i++)
+                    // {
+                    // user.passwodHash.Append(Convert.ToByte(tempHash[i]));
+                    // }
+                    // if (!verifyHash(user.password, user.passwordHash, user.passwordSalt))
+                    // {
+                    //     // var val = verifyHash(user.password, user.passwordHash, user.passwordSalt);
+                    //     return tempHash + " " + tempSalt;
+                    // }
+
                 }
-            }
-            catch (Exception)
-            {
-                throw;
+                string userPassword = user.password;
+                if (user.username == null)
+                {
+                    throw new AppException("User not found!");
+                }
+                else if (userPassword != password)
+                {
+                    throw new AppException("Wrong Password");
+                }
+                else
+                {
+                    var token = CreateToken(user);
+                    user.token = token;
+                    return user;
+                }
+                throw new AppException("Invalid User" + user.password);
             }
             return null;
         }
@@ -81,22 +88,19 @@ namespace Library.Repositories
         }
         public IUser register(string username, string password, int role)
         {
+            if (username == "")
+                throw new AppException("Username Invalid!");
+            if (password == "" || password.Length < 8)
+                throw new AppException("Password Invalid");
             // CreatePasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
             // string passwordHashString = Encoding.UTF8.GetString(passwordHash, 0, passwordHash.Length);
             // string passwordStaltString = Encoding.UTF8.GetString(passwordSalt, 0, passwordSalt.Length);
             // currentHash = passwordStaltString;
-            try
+            using (con = new SqlConnection(Constr))
             {
-                using (con = new SqlConnection(Constr))
-                {
-                    con.Open();
-                    var cmd = new SqlCommand($"INSERT INTO userTable (username, role, password)  VALUES  ('{username}','{role}','{password}')", con);
-                    SqlDataReader rdr = cmd.ExecuteReader();
-                }
-            }
-            catch (Exception)
-            {
-                throw;
+                con.Open();
+                var cmd = new SqlCommand($"INSERT INTO userTable (username, role, password)  VALUES  ('{username}','{role}','{password}')", con);
+                SqlDataReader rdr = cmd.ExecuteReader();
             }
             return new IUser { username = username, password = password };
         }

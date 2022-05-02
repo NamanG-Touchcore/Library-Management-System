@@ -33,6 +33,7 @@ import { StoreModule } from '@ngrx/store';
 import { PostIssueComponent } from './Components/post-issue/post-issue.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CustomInterceptor } from './Services/http-interceptor';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 @NgModule({
   declarations: [
@@ -65,6 +66,7 @@ import { CustomInterceptor } from './Services/http-interceptor';
     MatInputModule,
     MatDialogModule,
     MatProgressSpinnerModule,
+    MatSnackBarModule,
   ],
   providers: [
     {
