@@ -7,11 +7,13 @@ import { DashboardComponent } from './Components/dashboard/dashboard.component';
 import { IssueDetailsComponent } from './Components/issue-details/issue-details.component';
 import { IssueParentListComponent } from './Components/issue-parent-list/issue-parent-list.component';
 import { LoginComponent } from './Components/login/login.component';
+import { SignupComponent } from './Components/signup/signup.component';
 import { RouteGuardGuard } from './Services/route-guard.guard';
 
 const routes: Routes = [
   { path: '', redirectTo: '/books', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
+  { path: 'signup', component: SignupComponent },
   {
     path: '',
     component: DashboardComponent,

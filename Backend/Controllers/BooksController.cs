@@ -31,7 +31,7 @@ public class BookController : ControllerBase
         return Ok(repo2.GetBookRecord().ToList());
 
     }
-    [HttpPut]
+    [HttpPut, Authorize(Roles = "Admin")]
     public IActionResult Put(IBook book)
     {
         return Ok(repo2.addBook(book));
@@ -47,12 +47,12 @@ public class BookController : ControllerBase
     {
         return Ok(repo2.getBook(bookId));
     }
-    [HttpPut("{bookId}")]
+    [HttpPut("{bookId}"), Authorize(Roles = "Admin")]
     public IActionResult Put(int bookId, IBook book)
     {
         return Ok(repo2.updateBook(bookId, book));
     }
-    [HttpDelete("{bookId}")]
+    [HttpDelete("{bookId}"), Authorize(Roles = "Admin")]
     public IActionResult Delete(int bookId)
     {
         return Ok(repo2.DeleteBook(bookId));

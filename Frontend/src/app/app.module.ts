@@ -18,6 +18,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { IssueDetailsComponent } from './Components/issue-details/issue-details.component';
 import { IssueParentListComponent } from './Components/issue-parent-list/issue-parent-list.component';
 import {
@@ -34,6 +35,7 @@ import { PostIssueComponent } from './Components/post-issue/post-issue.component
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CustomInterceptor } from './Services/http-interceptor';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { SignupComponent } from './Components/signup/signup.component';
 
 @NgModule({
   declarations: [
@@ -50,6 +52,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     BookEditDialogComponent,
     LoginComponent,
     PostIssueComponent,
+    SignupComponent,
   ],
   imports: [
     BrowserModule,
@@ -64,6 +67,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     HttpClientModule,
     MatFormFieldModule,
     MatInputModule,
+    MatSelectModule,
     MatDialogModule,
     MatProgressSpinnerModule,
     MatSnackBarModule,

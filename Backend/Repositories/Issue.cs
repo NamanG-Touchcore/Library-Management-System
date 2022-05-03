@@ -91,7 +91,7 @@ namespace Library.Repositories
             List<IBook> issueList = new();
             try
             {
-                string query = $"SELECT  bookTable.*,issueTableObj.* FROM issueTableObj INNER JOIN userTable ON userTable.userId={id} INNER JOIN bookTable ON issueTableObj.bookId=bookTable.bookId";
+                string query = $"SELECT  bookTable.*,issueTableObj.* FROM issueTableObj  INNER JOIN bookTable ON issueTableObj.userId={id} AND bookTable.isBookActive=1 AND issueTableObj.bookID=bookTable.bookId ";
                 using (con = new SqlConnection(Constr))
                 {
                     con.Open();

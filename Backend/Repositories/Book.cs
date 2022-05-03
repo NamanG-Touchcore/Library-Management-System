@@ -71,7 +71,13 @@ namespace Library.Repositories
             using (con = new SqlConnection(Constr))
             {
                 con.Open();
-                var cmd = new SqlCommand(query, con);
+                var cmd = new SqlCommand("AddBook", con);
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@bookName", book.name);
+                cmd.Parameters.AddWithValue("@bookAuthor", book.author);
+                cmd.Parameters.AddWithValue("@bookDescription", book.description);
+                cmd.Parameters.AddWithValue("@bookImage", !(book.coverImage is null) ? book.coverImage : "");
+                cmd.Parameters.AddWithValue("@bookIssues", book.issues);
                 // cmd.CommandType=System.Data.CommandType.StoredProcedure;
                 SqlDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -98,7 +104,9 @@ namespace Library.Repositories
             using (con = new SqlConnection(Constr))
             {
                 con.Open();
-                var cmd = new SqlCommand(query, con);
+                var cmd = new SqlCommand("getBook", con);
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@bookId", id);
                 // cmd.CommandType=System.Data.CommandType.StoredProcedure;
                 SqlDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -131,14 +139,21 @@ namespace Library.Repositories
             IBook bookObj = new IBook();
             string query;
             if (book.coverImage != "unchanged")
-                query = $"UPDATE bookTable SET name='{book.name}', author='{book.author}', description='{book.description}',coverImage='{book.coverImage}'   WHERE bookId='{bookId}'";
+                // query = $"UPDATE bookTable SET name='{book.name}', author='{book.author}', description='{book.description}',coverImage='{book.coverImage}'   WHERE bookId='{bookId}'";
+                query = "updateBookWithCoverImage";
             else
-                query = $"UPDATE bookTable SET name='{book.name}', author='{book.author}', description='{book.description}'   WHERE bookId='{bookId}'";
+                // query = $"UPDATE bookTable SET name='{book.name}', author='{book.author}', description='{book.description}'   WHERE bookId='{bookId}'";
+                query = "updateBookWithoutCoverImage";
             using (con = new SqlConnection(Constr))
             {
                 con.Open();
                 var cmd = new SqlCommand(query, con);
-                // cmd.CommandType=System.Data.CommandType.StoredProcedure;
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@bookName", book.name);
+                cmd.Parameters.AddWithValue("@bookAuthor", book.author);
+                cmd.Parameters.AddWithValue("@bookDescription", book.description);
+                cmd.Parameters.AddWithValue("@bookImage", !(book.coverImage is null) ? book.coverImage : "");
+                cmd.Parameters.AddWithValue("@bookId", bookId);
                 SqlDataReader rdr = cmd.ExecuteReader();
                 while (rdr.Read())
                 {
@@ -165,8 +180,9 @@ namespace Library.Repositories
             using (con = new SqlConnection(Constr))
             {
                 con.Open();
-                var cmd = new SqlCommand(query, con);
-                // cmd.CommandType=System.Data.CommandType.StoredProcedure;
+                var cmd = new SqlCommand("deleteBook", con);
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@bookId", id);
                 SqlDataReader rdr = cmd.ExecuteReader();
 
             }
