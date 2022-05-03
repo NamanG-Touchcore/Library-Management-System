@@ -51,6 +51,7 @@ export class BookEditDialogComponent implements OnInit {
       description: this.author.value,
       coverImage: this.image,
     });
+    this.service.getBooksStatic();
     this.dialog.closeAll();
   }
   onEdit() {

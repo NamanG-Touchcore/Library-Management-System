@@ -55,8 +55,9 @@ export class GlobalStoreService {
   }
   username: string | null = null;
   role: boolean | string | null = 'null';
+  id: number | null = null;
   user = {
-    id: 1,
+    id: this.id,
     username: this.username,
     password: '',
     role: this.role,
@@ -65,6 +66,10 @@ export class GlobalStoreService {
   getUser(): Object {
     if (this.user.username == 'null' || this.user.username == null)
       this.user.username = localStorage.getItem('username');
+    if (this.user.id == null) {
+      console.log('id null', localStorage.getItem('userId'));
+      this.user.id = Number(localStorage.getItem('userId'));
+    }
     if (this.user.role == 'null') {
       if (localStorage.getItem('role') == '1') this.user.role = true;
       else this.user.role = false;
@@ -196,6 +201,9 @@ export class GlobalStoreService {
     this.user.role = !this.user.role;
   }
   getIssuesByUserId(id: number) {
+    console.log(id);
+    // if(id==null)
+
     return this.http.get(this.connectionStr + 'user/' + id + '/issues', {
       headers: this.headers,
     });
@@ -211,10 +219,20 @@ export class GlobalStoreService {
       password,
     });
   }
-  setUser(username: string, role: number, token: string) {
+  signup(username: string, password: string, role: number) {
+    return this.http.post(this.connectionStr + 'user/register', {
+      username,
+      password,
+      role,
+    });
+  }
+  setUser(username: string, role: number, token: string, id: number) {
+    console.log('in set user', id);
     localStorage.setItem('username', username);
     localStorage.setItem('role', role.toString());
+    localStorage.setItem('userId', id.toString());
     this.user.username = username;
+    this.user.id = id;
     if (role == 1) this.user.role = true;
     else this.user.role = false;
     this.setToken(token);

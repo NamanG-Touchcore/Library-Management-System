@@ -17,8 +17,8 @@ namespace Library.Repositories
             Console.WriteLine(Constr);
         }
 
-        
-        
+
+
         public IEnumerable<IIssue> GetIssues()
         {
             List<IIssue> issueList = new();
@@ -33,16 +33,16 @@ namespace Library.Repositories
                     while (rdr.Read())
                     {
                         IIssue issueObj = new IIssue();
-                        issueObj.isActive=Convert.ToInt32(rdr["isActive"]);
+                        issueObj.isActive = Convert.ToInt32(rdr["isActive"]);
                         issueObj.expiryDate = Convert.ToString(rdr["expiryDate"]);
                         issueObj.issueDate = Convert.ToString(rdr["issueDate"]);
                         issueObj.userId = Convert.ToInt32(rdr["userId"]);
                         issueObj.id = Convert.ToInt32(rdr["id"]);
-                        issueObj.bookId=Convert.ToInt32(rdr["bookId"]);
-                        issueObj.returnDate=Convert.ToString(rdr["returnDate"]);
-                        issueObj.username=Convert.ToString(rdr["username"]);
-                        issueObj.name=Convert.ToString(rdr["name"]);
-                        issueObj.fine=Convert.ToInt32(rdr["fine"]);
+                        issueObj.bookId = Convert.ToInt32(rdr["bookId"]);
+                        issueObj.returnDate = Convert.ToString(rdr["returnDate"]);
+                        issueObj.username = Convert.ToString(rdr["username"]);
+                        issueObj.name = Convert.ToString(rdr["name"]);
+                        issueObj.fine = Convert.ToInt32(rdr["fine"]);
                         issueList.Add(issueObj);
                     }
                 }
@@ -73,9 +73,9 @@ namespace Library.Repositories
                         issueObj.userId = Convert.ToInt32(rdr["userId"]);
                         issueObj.id = Convert.ToInt32(rdr["id"]);
                         issueObj.isActive = Convert.ToInt32(rdr["isActive"]);
-                        issueObj.username=Convert.ToString(rdr["username"]);
-                        issueObj.returnDate=Convert.ToString(rdr["returnDate"]);
-                        issueObj.fine=Convert.ToInt32(rdr["fine"]);
+                        issueObj.username = Convert.ToString(rdr["username"]);
+                        issueObj.returnDate = Convert.ToString(rdr["returnDate"]);
+                        issueObj.fine = Convert.ToInt32(rdr["fine"]);
                         issueList.Add(issueObj);
                     }
                 }
@@ -87,10 +87,11 @@ namespace Library.Repositories
             }
         }
         public IEnumerable<IBook> GetIssuesByUserId(int id)
-        {List<IBook> issueList = new();
+        {
+            List<IBook> issueList = new();
             try
             {
-                string query = $"SELECT  bookTable.*,issueTableObj.* FROM issueTableObj INNER JOIN userTable ON userTable.userId={id} INNER JOIN bookTable ON issueTableObj.bookId=bookTable.bookId";
+                string query = $"SELECT  bookTable.*,issueTableObj.* FROM issueTableObj  INNER JOIN bookTable ON issueTableObj.userId={id} AND bookTable.isBookActive=1 AND issueTableObj.bookID=bookTable.bookId ";
                 using (con = new SqlConnection(Constr))
                 {
                     con.Open();
@@ -99,19 +100,19 @@ namespace Library.Repositories
                     while (rdr.Read())
                     {
                         IBook bookObj = new IBook();
-                        bookObj.id=Convert.ToInt32(rdr["bookId"]);
-                        bookObj.author=Convert.ToString(rdr["author"]);
-                        bookObj.description=Convert.ToString(rdr["description"]);
-                        bookObj.name=Convert.ToString(rdr["name"]);
-                        bookObj.issues=Convert.ToInt32(rdr["issues"]);
-                        bookObj.issueId=Convert.ToInt32(rdr["id"]);
-                        bookObj.isActive=Convert.ToInt32(rdr["isActive"]);
-                        bookObj.returnDate=Convert.ToString(rdr["returnDate"]);
-                        bookObj.issueDate=Convert.ToString(rdr["issueDate"]);
-                        bookObj.expiryDate=Convert.ToString(rdr["expiryDate"]);
-                        bookObj.coverImage=Convert.ToString(rdr["coverImage"]);
-                        bookObj.isBookActive=Convert.ToInt32(rdr["isBookActive"]);
-                        
+                        bookObj.id = Convert.ToInt32(rdr["bookId"]);
+                        bookObj.author = Convert.ToString(rdr["author"]);
+                        bookObj.description = Convert.ToString(rdr["description"]);
+                        bookObj.name = Convert.ToString(rdr["name"]);
+                        bookObj.issues = Convert.ToInt32(rdr["issues"]);
+                        bookObj.issueId = Convert.ToInt32(rdr["id"]);
+                        bookObj.isActive = Convert.ToInt32(rdr["isActive"]);
+                        bookObj.returnDate = Convert.ToString(rdr["returnDate"]);
+                        bookObj.issueDate = Convert.ToString(rdr["issueDate"]);
+                        bookObj.expiryDate = Convert.ToString(rdr["expiryDate"]);
+                        bookObj.coverImage = Convert.ToString(rdr["coverImage"]);
+                        bookObj.isBookActive = Convert.ToInt32(rdr["isBookActive"]);
+
                         issueList.Add(bookObj);
                     }
                 }
@@ -122,76 +123,65 @@ namespace Library.Repositories
                 throw;
             }
         }
-        public void putIssues(int bookId, IIssue issue)
+        public IReturnStatement putIssues(int bookId, IIssue issue)
         {
 
             List<IIssue> issueList = new();
-            try
+            string query = $"INSERT INTO issueTableObj ( bookId, userId, issueDate, expiryDate, isActive, returnDate, fine) VALUES ('{issue.bookId}', '{issue.userId}', '{issue.issueDate}','{issue.expiryDate}','{issue.isActive}', '{issue.returnDate}', '{issue.fine}');";
+            string queryUpdate = $"UPDATE bookTable SET issues=issues+1, activeIssues=activeIssues+1 WHERE bookId='{bookId}'";
+            using (con = new SqlConnection(Constr))
             {
-                string query = $"INSERT INTO issueTableObj ( bookId, userId, issueDate, expiryDate, isActive, returnDate, fine) VALUES ('{issue.bookId}', '{issue.userId}', '{issue.issueDate}','{issue.expiryDate}','{issue.isActive}', '{issue.returnDate}', '{issue.fine}');";
-                string queryUpdate = $"UPDATE bookTable SET issues=issues+1, activeIssues=activeIssues+1 WHERE bookId='{bookId}'";
-                using (con = new SqlConnection(Constr))
+                con.Open();
+                var cmd = new SqlCommand(query, con);
+                SqlDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
                 {
-                    con.Open();
-                    var cmd = new SqlCommand(query, con);
-                    SqlDataReader rdr = cmd.ExecuteReader();
-                    while (rdr.Read())
-                    {
-                        IIssue issueObj = new IIssue();
-                        issueObj.bookId = Convert.ToInt32(rdr["bookId"]);
-                        issueObj.expiryDate = Convert.ToString(rdr["expiryDate"]);
-                        issueObj.issueDate = Convert.ToString(rdr["issueDate"]);
-                        issueObj.userId = Convert.ToInt32(rdr["userId"]);
-                        issueObj.id = Convert.ToInt32(rdr["id"]);
-                        issueObj.isActive = Convert.ToInt32(rdr["isActive"]);
-                        issueObj.returnDate=Convert.ToString(rdr["returnDate"]);
-                        issueList.Add(issueObj);
-                    }
-                    rdr.Close();
-                    cmd = new SqlCommand(queryUpdate, con);
-                    rdr = cmd.ExecuteReader();
+                    IIssue issueObj = new IIssue();
+                    issueObj.bookId = Convert.ToInt32(rdr["bookId"]);
+                    issueObj.expiryDate = Convert.ToString(rdr["expiryDate"]);
+                    issueObj.issueDate = Convert.ToString(rdr["issueDate"]);
+                    issueObj.userId = Convert.ToInt32(rdr["userId"]);
+                    issueObj.id = Convert.ToInt32(rdr["id"]);
+                    issueObj.isActive = Convert.ToInt32(rdr["isActive"]);
+                    issueObj.returnDate = Convert.ToString(rdr["returnDate"]);
+                    issueList.Add(issueObj);
                 }
-                // return books.ToList();
+                rdr.Close();
+                cmd = new SqlCommand(queryUpdate, con);
+                rdr = cmd.ExecuteReader();
             }
-            catch (Exception)
-            {
-                throw;
-            }
+            // return books.ToList();
+            return new IReturnStatement() { message = "Book Issued" };
         }
 
-        public void putIssue( int bookId, int issueId, int isActive, int fine)
+        public IReturnStatement putIssue(int bookId, int issueId, int isActive, int fine)
         {
             List<IIssue> issueList = new();
-            try
+
+            string query;
+            string queryUpdate;
+            if (isActive == 0)
             {
-                string query; 
-                string queryUpdate;
-                if(isActive==0)
-                {
-                var date=DateTime.Today.ToLongDateString();
-                query= $"UPDATE issueTableObj SET isActive='{isActive}', returnDate='{date}', fine={fine} WHERE id='{issueId}'";
+                var date = DateTime.Today.ToLongDateString();
+                query = $"UPDATE issueTableObj SET isActive='{isActive}', returnDate='{date}', fine={fine} WHERE id='{issueId}'";
                 queryUpdate = $"UPDATE bookTable SET activeIssues=activeIssues-1 WHERE bookId='{bookId}'";
-                }
-                else
-                {
-                queryUpdate = $"UPDATE bookTable SET activeIssues=activeIssues+1 WHERE bookId='{bookId}'";
-                query= $"UPDATE issueTableObj SET isActive='{isActive}', returnDate='null', fine={0} WHERE id='{issueId}'";
-                }
-                using (con = new SqlConnection(Constr))
-                {
-                    con.Open();
-                    var cmd = new SqlCommand(query, con);
-                    SqlDataReader rdr=cmd.ExecuteReader();
-                    rdr.Close();
-                    cmd = new SqlCommand(queryUpdate, con);
-                    rdr = cmd.ExecuteReader();
-                }
-                // return books.ToList();
             }
-            catch (Exception)
+            else
             {
-                throw;
+                queryUpdate = $"UPDATE bookTable SET activeIssues=activeIssues+1 WHERE bookId='{bookId}'";
+                query = $"UPDATE issueTableObj SET isActive='{isActive}', returnDate='null', fine={0} WHERE id='{issueId}'";
             }
+            using (con = new SqlConnection(Constr))
+            {
+                con.Open();
+                var cmd = new SqlCommand(query, con);
+                SqlDataReader rdr = cmd.ExecuteReader();
+                rdr.Close();
+                cmd = new SqlCommand(queryUpdate, con);
+                rdr = cmd.ExecuteReader();
+            }
+            // return books.ToList();
+            return new IReturnStatement() { message = "Book " + (isActive == 1 ? "Issued" : "Returned") + "!" };
         }
     }
 
@@ -199,8 +189,8 @@ namespace Library.Repositories
     {
         public IEnumerable<IIssue> GetIssuesByBookId(int id);
         public IEnumerable<IIssue> GetIssues();
-        public void putIssues(int bookId, IIssue issue);
-        public void putIssue(int issueId, int bookId, int func, int fine);
+        public IReturnStatement putIssues(int bookId, IIssue issue);
+        public IReturnStatement putIssue(int issueId, int bookId, int func, int fine);
         public IEnumerable<IBook> GetIssuesByUserId(int id);
     }
 

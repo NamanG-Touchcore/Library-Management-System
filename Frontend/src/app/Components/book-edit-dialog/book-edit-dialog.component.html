@@ -3,7 +3,7 @@
   <form>
     <mat-form-field class="search-input" appearance="outline">
       <mat-label>Title</mat-label>
-      <input type="text" aria-label="Title" matInput [formControl]="name" />
+      <input type="text" aria-label="Title" matInput [formControl]="name" onblur="" />
       <mat-hint style="color: red" *ngIf="name.value == ' '"
         >The Title is Required</mat-hint
       >
